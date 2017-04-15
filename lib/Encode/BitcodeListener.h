@@ -14,7 +14,7 @@
 #include "../Thread/StackType.h"
 
 #define PTR 0
-#define DEBUG_RUNTIME 0
+#define DEBUG_RUNTIME 1
 #define BIT_WIDTH 64
 
 namespace klee {

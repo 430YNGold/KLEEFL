@@ -41,7 +41,7 @@
 #include "../../include/klee/util/Ref.h"
 #include "Prefix.h"
 
-#define FORMULA_DEBUG 0
+#define FORMULA_DEBUG 1
 #define BRANCH_INFO 1
 #define BUFFERSIZE 300
 #define BIT_WIDTH 64
@@ -100,6 +100,10 @@ namespace klee {
 
 //true :: assert can't be violated. false :: assert can be violated.
 	bool Encode::verify() {
+
+		/*
+		 *  can be advanced, the assertFormula can be cached.
+		 */
 #if FORMULA_DEBUG
 		showInitTrace();
 #endif
@@ -141,7 +145,9 @@ namespace klee {
 
 			Event* curr = assertFormula[i].first;
 
+			//add the !assert
 			z3_solver.add(!assertFormula[i].second);
+
 			for (unsigned j = 0; j < assertFormula.size(); j++) {
 				if (j == i) {
 					continue;
@@ -157,6 +163,8 @@ namespace klee {
 					constraint = implies(tempIf < currIf, assertFormula[j].second);
 				z3_solver.add(constraint);
 			}
+
+			//control flow??
 			for (unsigned j = 0; j < ifFormula.size(); j++) {
 				Event* temp = ifFormula[j].first;
 				expr currIf = z3_ctx.int_const(curr->eventName.c_str());
@@ -181,7 +189,7 @@ namespace klee {
 				std::cerr << "Yes!\n";
 				runtimeData->clearAllPrefix();
 
-				//former :: replay the bug trace and erminate klee. later:: terminate klee directly
+				//former :: replay the bug trace and terminate klee. later:: terminate klee directly
 				if (true) {
 					vector<Event*> vecEvent;
 					computePrefix(vecEvent, assertFormula[i].first);
@@ -563,9 +571,11 @@ namespace klee {
 
 	void Encode::computePrefix(vector<Event*>& vecEvent, Event* ifEvent) {
 		vector<struct Pair *> eventOrderPair;
-//get the order of event
+
+		//get the order of event
 		map<string, expr>::iterator it = eventNameInZ3.find(ifEvent->eventName);
 		assert(it != eventNameInZ3.end());
+
 		model m = z3_solver.get_model();
 		stringstream ss;
 		ss << m.eval(it->second);
@@ -575,23 +585,33 @@ namespace klee {
 			if (thread == NULL)
 				continue;
 			for (unsigned index = 0, size = thread->size(); index < size; index++) {
+
+				//Virtural?
 				if (thread->at(index)->eventType == Event::VIRTUAL)
 					continue;
 
+				//TODO 可以考虑使用cache,因为划块的缘故,有些对应的order已经求出, 或首先判断 eventname是否相等.
 				it = eventNameInZ3.find(thread->at(index)->eventName);
 				assert(it != eventNameInZ3.end());
 				stringstream ss;
 				ss << m.eval(it->second);
 				long order = atoi(ss.str().c_str());
+
+
 				//cut off segment behind the negated branch
 				if (order > ifEventOrder)
 					continue;
+
+				//当order相同时,是否可以证明两个 event 之间可以互换顺序?
 				if (order == ifEventOrder && thread->at(index)->threadId != ifEvent->threadId)
 					continue;
+
+				// 间接等于 order相同, threadId 相同的情况.
+				// 与划块有关 (order 相同),导致 多个eventId 对应同一个 eventName. 同一线程 eventId 大的, 发生在后面.
 				if (thread->at(index)->eventName == ifEvent->eventName && thread->at(index)->eventId > ifEvent->eventId)
 					continue;
 				//put the event to its position
-				//
+
 				Pair * pair = new Pair;				//should be deleted
 				pair->order = order;
 				pair->event = thread->at(index);
@@ -599,6 +619,7 @@ namespace klee {
 			}
 		}
 
+		//TODO 可以在排序算法方面优化,或抽象成为工具类中的方法.
 //sort all events according to order
 		unsigned size = eventOrderPair.size();
 		for (unsigned i = 0; i < size - 1; i++) {
@@ -1207,6 +1228,9 @@ namespace klee {
 #endif
 	}        //
 
+	/*
+	 *
+	 */
 	void Encode::buildMemoryModelFormula(solver z3_solver_mm) {
 #if FORMULA_DEBUG
 		std::cerr << "\nMemoryModelFormula:\n";
@@ -1278,6 +1302,9 @@ namespace klee {
 		formulaNum++;
 	}
 
+	/*
+	 * 什么时候进行划块(InstType = NormalOP),以及划块的范围.
+	 */
 //level: 0--bitcode; 1--source code; 2--block
 	void Encode::controlGranularity(int level) {
 //	map<string, InstType> record;
