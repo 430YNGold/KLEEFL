@@ -19,6 +19,9 @@
 
 namespace klee {
 
+	//TODO Split the class?
+	//TODO the Z3 Expr can be ref<Expr> type?
+	//TODO the differences between globalName and name ?
 	class Event {
 		public:
 			enum EventType {
@@ -29,7 +32,7 @@ namespace klee {
 		public:
 			unsigned threadId;
 			unsigned eventId;
-			unsigned threadEventId;
+			unsigned threadEventId; // the number of eventlist[threadId]'s size.
 			std::string eventName;
 			KInstruction* inst;
 			std::string name; //name of load or store variable
@@ -44,7 +47,7 @@ namespace klee {
 			llvm::Function* calledFunction; //set for called function. all callinst use it.@14.12.02
 			std::vector<unsigned> vectorClock;
 			std::vector<ref<klee::Expr> > instParameter;
-			std::vector<ref<klee::Expr> > relatedSymbolicExpr;
+			std::vector<ref<klee::Expr> > relatedSymbolicExpr; //TODO if the global variable is symbolic?
 
 			Event();
 			Event(unsigned threadId, unsigned eventId, std::string eventName, KInstruction* inst, std::string globalVarName,

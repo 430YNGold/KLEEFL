@@ -26,6 +26,8 @@ namespace klee {
 
 		private:
 			std::vector<Event*> eventList;
+
+			//FIXME if had many child threads,
 			std::map<Event*, uint64_t> threadIdMap;
 			EventIterator position;
 			std::string name;

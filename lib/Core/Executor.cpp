@@ -3682,6 +3682,7 @@ void Executor::runVerification(llvm::Function *f, int argc, char **argv, char **
 	}
 }
 
+//TODO the differences between states and events
 void Executor::prepareNextExecution() {
 	for (std::set<ExecutionState*>::const_iterator it = states.begin(), ie =
 			states.end(); it != ie; ++it) {

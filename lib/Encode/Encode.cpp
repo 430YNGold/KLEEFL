@@ -190,6 +190,7 @@ namespace klee {
 				runtimeData->clearAllPrefix();
 
 				//former :: replay the bug trace and terminate klee. later:: terminate klee directly
+				// TODO what's the meaning of if(true) ?
 				if (true) {
 					vector<Event*> vecEvent;
 					computePrefix(vecEvent, assertFormula[i].first);
@@ -205,6 +206,8 @@ namespace klee {
 
 				}
 #if FORMULA_DEBUG
+
+				//enter the model into file
 				std::ofstream out_file(output.str().c_str(), std::ios_base::out | std::ios_base::app);
 				out_file << "!assertFormula[i].second : " << !assertFormula[i].second << "\n";
 				out_file << "\n" << z3_solver << "\n";
@@ -569,6 +572,7 @@ namespace klee {
 
 	}
 
+	//TODO maybe can optimize the data structure of vecEvent, eventOrderPair.
 	void Encode::computePrefix(vector<Event*>& vecEvent, Event* ifEvent) {
 		vector<struct Pair *> eventOrderPair;
 

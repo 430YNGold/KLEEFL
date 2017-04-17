@@ -643,9 +643,12 @@ namespace klee {
 			gettimeofday(&start, NULL);
 			encode = new Encode(&rdManager);
 			encode->buildifAndassert();
+
+			//when find the bug using verify(), don't execute the check_if(), and the failed prefix will be created.
 			if (encode->verify()) {
 				encode->check_if();
 			}
+
 			gettimeofday(&finish, NULL);
 			cost = (double) (finish.tv_sec * 1000000UL + finish.tv_usec - start.tv_sec * 1000000UL - start.tv_usec) / 1000000UL;
 			rdManager.solvingCost += cost;
@@ -677,6 +680,8 @@ namespace klee {
 			bitcodeListeners.pop_back();
 		}
 
+		//TODO the variable and function that control the processing of verifying need be unified.
+		//TODO the max executionNum
 		if(executor->executionNum >= 70){
 			executor->isFinished = true;
 		}
