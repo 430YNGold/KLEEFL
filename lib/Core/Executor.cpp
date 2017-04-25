@@ -2629,6 +2629,7 @@ void Executor::run(ExecutionState &initialState) {
 
 	handleInitializers(initialState);
 
+	//原检测方法中 states 只有一个 executionstate,
 	while (!states.empty() && !haltExecution) {
 		ExecutionState &state = searcher->selectState();
 		Thread* thread = state.getNextThread();
@@ -2711,6 +2712,8 @@ void Executor::run(ExecutionState &initialState) {
 //    	}
 //    }
 		KInstruction *ki = thread->pc;
+
+		//prefix 的 currentInst 与 将要执行的Inst 不同时. 终止该 state?
 		if (prefix && !prefix->isFinished() && ki != prefix->getCurrentInst()) {
 			//cerr << "prefix: " << prefix->getCurrentInst() << " " << prefix->getCurrentInst()->inst->getOpcodeName() << " reality: " << ki << " " << ki->inst->getOpcodeName() << endl;
 			llvm::errs() << "thread id : " << thread->threadId << "\n";
@@ -4160,7 +4163,7 @@ void Executor::createSpecialElement(ExecutionState& state, Type* type, uint64_t&
 
 		case Type::StructTyID: {
 			std::string errorMsg;
-//			llvm::errs() << "StructName : " << type->getStructName().str() << "\n";
+			//llvm::errs() << "StructName : " << type->getStructName().str() << "\n";
 			//下列代码只是为了处理三种特殊结构体的内存对齐，对于复杂对象，其第一个元素在被访问时会计算内存对齐，因此不需要额外对复杂对象计算
 			//内存对齐，这里计算结构体的内存对齐只是因为mutex，cond，barrier三种类型不会被解析，因此需要提前计算。
 			DataLayout* layout = kmodule->targetData;

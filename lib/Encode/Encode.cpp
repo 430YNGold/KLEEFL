@@ -184,10 +184,12 @@ namespace klee {
 
 			solvingTimes++;
 			stringstream output;
-			if (result == z3::sat) {
 				//should compute the prefix violating assert
+			if (result == z3::sat) {
 				std::cerr << "Yes!\n";
 				runtimeData->clearAllPrefix();
+
+				// TODO get the failed prefix. further maybe we can get the trace.
 
 				//former :: replay the bug trace and terminate klee. later:: terminate klee directly
 				// TODO what's the meaning of if(true) ?
@@ -232,6 +234,7 @@ namespace klee {
 		return true;
 	}
 
+	// 每一个if都进行分支取反,会生成多个prefix
 	void Encode::check_if() {
 		unsigned sum = 0, num = 0;
 		unsigned size = ifFormula.size();
