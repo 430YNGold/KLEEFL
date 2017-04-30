@@ -90,6 +90,7 @@ namespace klee {
 			std::set<std::string> DTAMParallelMap;
 			std::set<std::string> DTAMhybridMap;
 
+			//
 			Trace();
 
 			virtual ~Trace();
