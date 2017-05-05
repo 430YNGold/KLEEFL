@@ -10,34 +10,34 @@ using namespace std;
 namespace klee
 {
 
-std::vector<std::string> SliceUtil::getVariablesFromEvent(Event* event)
+vector<std::string> SliceUtil::getVariablesFromEvent(Event* event)
 {
 
 }
 
-std::vector<Event*> SliceUtil::getEventList(Event* slicePoint,
+vector<Event*> SliceUtil::getEventList(Event* slicePoint,
 		std::vector<Event*> events)
 {
 
 }
 
-std::vector<Event*> SliceUtil::getControlFlowSlices(
+vector<Event*> SliceUtil::getControlFlowSlices(
 		std::vector<std::string> variables, std::vector<Event*> events)
 {
 }
 
-std::vector<Event*> SliceUtil::getDataFlowSlices(
+vector<Event*> SliceUtil::getDataFlowSlices(
 		std::vector<std::string> variables, std::vector<Event*> events)
 {
 }
 
-static vector<Event*> SliceUtil::mergeSlices(vector<Event*> eventsA,
+vector<Event*> SliceUtil::mergeSlices(vector<Event*> eventsA,
 		vector<Event*> eventsB)
 {
 
 }
 
-static vector<Event*> SliceUtil::dynamicBackWardSlices(Event* slicePoint,
+vector<Event*> SliceUtil::dynamicBackWardSlices(Event* slicePoint,
 		vector<Event*> events)
 {
 }

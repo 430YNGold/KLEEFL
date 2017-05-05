@@ -30,6 +30,8 @@
 #include "Trace.h"
 #include "../Core/Executor.h"
 
+#define DEBUGSYMBOLIC 1
+
 using namespace std;
 using namespace llvm;
 
@@ -109,6 +111,7 @@ namespace klee {
 					if ((id >= Type::HalfTyID) && (id <= Type::DoubleTyID)) {
 						isFloat = 1;
 					}
+
 					if (currentEvent->isGlobal) {
 						if (isFloat || id == Type::IntegerTyID || id == Type::PointerTyID) {
 							Expr::Width size = executor->getWidthForLLVMType(ki->inst->getOperand(0)->getType());
@@ -116,8 +119,10 @@ namespace klee {
 							ref<Expr> symbolic = manualMakeSymbolic(state, currentEvent->globalName, size, isFloat);
 							ref<Expr> constraint = EqExpr::create(value, symbolic);
 							trace->storeSymbolicExpr.push_back(constraint);
-//					llvm::errs() << "event name : " << currentEvent->eventName << "\n";
-//					llvm::errs() << "store constraint : " << constraint << "\n";
+#if DEBUGSYMBOLIC
+					llvm::errs() << "event name : " << currentEvent->eventName << "\n";
+					llvm::errs() << "store constraint : " << constraint << "\n";
+#endif
 						}
 					}
 					break;

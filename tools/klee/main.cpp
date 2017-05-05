@@ -70,6 +70,7 @@
 #include <iterator>
 #include <sstream>
 
+#define DEBUG_VERSION 1
 
 using namespace llvm;
 using namespace klee;
@@ -1157,6 +1158,10 @@ static llvm::Module *linkWithUclibc(llvm::Module *mainModule, StringRef libDir) 
 
 int main(int argc, char **argv, char **envp) {
   atexit(llvm_shutdown);  // Call llvm_shutdown() on exit.
+
+#if DEBUG_VERSION
+  llvm::errs() << "klee version: cap_6.2\n";
+#endif
 
   llvm::InitializeNativeTarget();
 

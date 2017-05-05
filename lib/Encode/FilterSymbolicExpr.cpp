@@ -53,6 +53,7 @@ namespace klee {
 	}
 
 	void FilterSymbolicExpr::resolveSymbolicExpr(ref<klee::Expr> symbolicExpr, std::set<std::string> &relatedSymbolicExpr) {
+		symbolicExpr->dump();
 		if (symbolicExpr->getKind() == Expr::Read) {
 			std::string name = getName(symbolicExpr);
 			if (relatedSymbolicExpr.find(name) == relatedSymbolicExpr.end()) {
@@ -247,6 +248,8 @@ namespace klee {
 			std::set<std::string> *tempSymbolicExpr = new std::set<std::string>;
 			resolveSymbolicExpr(it->get(), *tempSymbolicExpr);
 			brRelatedSymbolicExpr.push_back(tempSymbolicExpr);
+
+			//add symbolic to all related Expr
 			addExprToRelate(tempSymbolicExpr);
 		}
 
